@@ -4,12 +4,12 @@
 #include "MainPage.h"
 
 using namespace winrt;
-using namespace Windows::ApplicationModel;
-using namespace Windows::ApplicationModel::Activation;
-using namespace Windows::Foundation;
-using namespace Windows::UI::Xaml;
-using namespace Windows::UI::Xaml::Controls;
-using namespace Windows::UI::Xaml::Navigation;
+using namespace winrt::Windows::ApplicationModel;
+using namespace winrt::Windows::ApplicationModel::Activation;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::UI::Xaml;
+using namespace winrt::Windows::UI::Xaml::Controls;
+using namespace winrt::Windows::UI::Xaml::Navigation;
 using namespace HLSLComputePlayground;
 using namespace HLSLComputePlayground::implementation;
 
@@ -34,6 +34,125 @@ App::App()
 #endif
 }
 
+static winrt::Windows::Foundation::IAsyncAction run() {
+	com_ptr<ID3D12Debug> debug;
+	com_ptr<ID3D12Debug1> debug1;
+	check_hresult(D3D12GetDebugInterface(__uuidof(debug), debug.put_void()));
+	check_hresult(debug->QueryInterface(__uuidof(debug1), debug1.put_void()));
+	debug1->EnableDebugLayer();
+	debug1->SetEnableGPUBasedValidation(true);
+
+	com_ptr<IDXGIFactory4> dxgiFactory;
+	check_hresult(CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, __uuidof(dxgiFactory), dxgiFactory.put_void()));
+
+	com_ptr<IDXGIAdapter1> dxgiAdapter;
+	check_hresult(dxgiFactory->EnumAdapters1(0, dxgiAdapter.put()));
+
+	com_ptr<ID3D12Device> device;
+	check_hresult(D3D12CreateDevice(dxgiAdapter.get(), D3D_FEATURE_LEVEL_12_1, __uuidof(device), device.put_void()));
+
+	CD3DX12_ROOT_PARAMETER1 rootParameters[2];
+	rootParameters[0].InitAsUnorderedAccessView(0);
+	rootParameters[1].InitAsUnorderedAccessView(1);
+	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
+	rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters);
+	com_ptr<ID3DBlob> signature;
+	com_ptr<ID3DBlob> error;
+	check_hresult(D3DX12SerializeVersionedRootSignature(&rootSignatureDescription, D3D_ROOT_SIGNATURE_VERSION_1_1, signature.put(), error.put()));
+
+	com_ptr<ID3D12RootSignature> rootSignature;
+	check_hresult(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), __uuidof(rootSignature), rootSignature.put_void()));
+
+	auto folder = winrt::Windows::ApplicationModel::Package::Current().InstalledLocation();
+	auto file = co_await folder.GetFileAsync(L"ComputeShader.cso");
+	auto fileBuffer = co_await winrt::Windows::Storage::FileIO::ReadBufferAsync(file);
+	std::vector<byte> bytecode;
+	bytecode.resize(fileBuffer.Length());
+	winrt::Windows::Storage::Streams::DataReader::FromBuffer(fileBuffer).ReadBytes(bytecode);
+
+	D3D12_COMPUTE_PIPELINE_STATE_DESC pipelineStateDescriptor = {};
+	pipelineStateDescriptor.pRootSignature = rootSignature.get();
+	pipelineStateDescriptor.CS = CD3DX12_SHADER_BYTECODE(bytecode.data(), bytecode.size());
+	com_ptr<ID3D12PipelineState> pipelineState;
+	check_hresult(device->CreateComputePipelineState(&pipelineStateDescriptor, __uuidof(pipelineState), pipelineState.put_void()));
+
+	auto defaultHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	auto uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	auto readbackHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_READBACK);
+	CD3DX12_RESOURCE_DESC matrixResourceDescription = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * 4 * 4 * 2);
+	CD3DX12_RESOURCE_DESC matrixResourceDescriptionUAV = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * 4 * 4 * 2, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+	CD3DX12_RESOURCE_DESC floatResourceDescription = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * 4 * 4);
+	CD3DX12_RESOURCE_DESC floatResourceDescriptionUAV = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * 4 * 4, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+	com_ptr<ID3D12Resource> buffer1;
+	check_hresult(device->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &matrixResourceDescriptionUAV, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, __uuidof(buffer1), buffer1.put_void()));
+	com_ptr<ID3D12Resource> buffer1Upload;
+	check_hresult(device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &matrixResourceDescription, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, __uuidof(buffer1Upload), buffer1Upload.put_void()));
+
+	com_ptr<ID3D12Resource> buffer2;
+	check_hresult(device->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &floatResourceDescriptionUAV, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nullptr, __uuidof(buffer2), buffer2.put_void()));
+	com_ptr<ID3D12Resource> buffer2Download;
+	check_hresult(device->CreateCommittedResource(&readbackHeapProperties, D3D12_HEAP_FLAG_NONE, &floatResourceDescription, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, __uuidof(buffer2Download), buffer2Download.put_void()));
+
+	com_ptr<ID3D12CommandQueue> commandQueue;
+	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+	check_hresult(device->CreateCommandQueue(&queueDesc, __uuidof(commandQueue), commandQueue.put_void()));
+
+	com_ptr<ID3D12CommandAllocator> commandAllocator;
+	check_hresult(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, __uuidof(commandAllocator), commandAllocator.put_void()));
+
+	com_ptr<ID3D12GraphicsCommandList> commandList;
+	check_hresult(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.get(), nullptr, __uuidof(commandList), commandList.put_void()));
+
+	com_ptr<ID3D12Fence> fence;
+	check_hresult(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __uuidof(fence), fence.put_void()));
+	auto fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	//assert(fenceEvent == nullptr);
+
+	D3D12_SUBRESOURCE_DATA buffer1Data = {};
+	float rawBuffer1Data[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 };
+	buffer1Data.pData = &rawBuffer1Data;
+	buffer1Data.RowPitch = sizeof(float) * 4 * 4 * 2;
+	buffer1Data.SlicePitch = buffer1Data.RowPitch;
+	UpdateSubresources(commandList.get(), buffer1.get(), buffer1Upload.get(), 0, 0, 1, &buffer1Data);
+	CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(buffer1.get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+	commandList->ResourceBarrier(1, &barrier1);
+
+	commandList->SetPipelineState(pipelineState.get());
+	commandList->SetComputeRootSignature(rootSignature.get());
+	commandList->SetComputeRootUnorderedAccessView(0, buffer1->GetGPUVirtualAddress());
+	commandList->SetComputeRootUnorderedAccessView(1, buffer2->GetGPUVirtualAddress());
+	commandList->Dispatch(1, 1, 1);
+
+	CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(buffer2.get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_SOURCE);
+	commandList->ResourceBarrier(1, &barrier2);
+	commandList->CopyResource(buffer2Download.get(), buffer2.get());
+
+	check_hresult(commandList->Close());
+	ID3D12CommandList* commandLists[] = { commandList.get() };
+	commandQueue->ExecuteCommandLists(1, commandLists);
+
+	check_hresult(commandQueue->Signal(fence.get(), 1));
+	check_hresult(fence->SetEventOnCompletion(1, fenceEvent));
+	WaitForSingleObjectEx(fenceEvent, INFINITE, FALSE);
+
+	D3D12_RANGE readbackBufferRange{ 0, sizeof(float) * 4 * 4 };
+	void* readbackBufferData = nullptr;
+	check_hresult(buffer2Download->Map(0, &readbackBufferRange, &readbackBufferData));
+	float result[4 * 4];
+	memcpy(result, readbackBufferData, sizeof(float) * 4 * 4);
+	D3D12_RANGE emptyRange{ 0, 0 };
+	buffer2Download->Unmap(0, &emptyRange);
+
+	{
+		std::wstringstream ss;
+		for (int i = 0; i < 4 * 4; ++i)
+			ss << result[i] << std::endl;
+		OutputDebugString(ss.str().c_str());
+	}
+}
+
 /// <summary>
 /// Invoked when the application is launched normally by the end user.  Other entry points
 /// will be used such as when the application is launched to open a specific file.
@@ -41,6 +160,8 @@ App::App()
 /// <param name="e">Details about the launch request and process.</param>
 void App::OnLaunched(LaunchActivatedEventArgs const& e)
 {
+	run();
+
     Frame rootFrame{ nullptr };
     auto content = Window::Current().Content();
     if (content)
