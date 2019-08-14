@@ -7,5 +7,6 @@ void main()
 	float4x4 a = buffer1[0];
 	float4x4 b = buffer1[1];
 	float4x4 c = mul(a, b);
+	float4x4 d = a - 3;
 	buffer2[0] = c;
 }
