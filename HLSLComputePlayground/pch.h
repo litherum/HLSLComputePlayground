@@ -22,3 +22,4 @@
 #include "d3dx12.h"
 
 #include <sstream>
+#include <cmath>

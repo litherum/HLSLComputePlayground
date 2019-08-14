@@ -76,13 +76,17 @@ static winrt::Windows::Foundation::IAsyncAction run() {
 	com_ptr<ID3D12PipelineState> pipelineState;
 	check_hresult(device->CreateComputePipelineState(&pipelineStateDescriptor, __uuidof(pipelineState), pipelineState.put_void()));
 
+	float rawBuffer1Data[] = { -0.0, 0.0 };
+	constexpr int numFloatsUpload = _countof(rawBuffer1Data);
+	constexpr int numFloatsReadback = 1;
+
 	auto defaultHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	auto uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto readbackHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_READBACK);
-	CD3DX12_RESOURCE_DESC matrixResourceDescription = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * 4 * 4 * 2);
-	CD3DX12_RESOURCE_DESC matrixResourceDescriptionUAV = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * 4 * 4 * 2, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
-	CD3DX12_RESOURCE_DESC floatResourceDescription = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * 4 * 4);
-	CD3DX12_RESOURCE_DESC floatResourceDescriptionUAV = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * 4 * 4, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+	CD3DX12_RESOURCE_DESC matrixResourceDescription = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * numFloatsUpload);
+	CD3DX12_RESOURCE_DESC matrixResourceDescriptionUAV = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * numFloatsUpload, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+	CD3DX12_RESOURCE_DESC floatResourceDescription = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * numFloatsReadback);
+	CD3DX12_RESOURCE_DESC floatResourceDescriptionUAV = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * numFloatsReadback, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
 	com_ptr<ID3D12Resource> buffer1;
 	check_hresult(device->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &matrixResourceDescriptionUAV, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, __uuidof(buffer1), buffer1.put_void()));
 	com_ptr<ID3D12Resource> buffer1Upload;
@@ -108,12 +112,10 @@ static winrt::Windows::Foundation::IAsyncAction run() {
 	com_ptr<ID3D12Fence> fence;
 	check_hresult(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __uuidof(fence), fence.put_void()));
 	auto fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	//assert(fenceEvent == nullptr);
 
 	D3D12_SUBRESOURCE_DATA buffer1Data = {};
-	float rawBuffer1Data[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 };
 	buffer1Data.pData = &rawBuffer1Data;
-	buffer1Data.RowPitch = sizeof(float) * 4 * 4 * 2;
+	buffer1Data.RowPitch = sizeof(float) * numFloatsUpload;
 	buffer1Data.SlicePitch = buffer1Data.RowPitch;
 	UpdateSubresources(commandList.get(), buffer1.get(), buffer1Upload.get(), 0, 0, 1, &buffer1Data);
 	CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(buffer1.get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
@@ -137,18 +139,18 @@ static winrt::Windows::Foundation::IAsyncAction run() {
 	check_hresult(fence->SetEventOnCompletion(1, fenceEvent));
 	WaitForSingleObjectEx(fenceEvent, INFINITE, FALSE);
 
-	D3D12_RANGE readbackBufferRange{ 0, sizeof(float) * 4 * 4 };
+	D3D12_RANGE readbackBufferRange{ 0, sizeof(float) * numFloatsReadback };
 	void* readbackBufferData = nullptr;
 	check_hresult(buffer2Download->Map(0, &readbackBufferRange, &readbackBufferData));
-	float result[4 * 4];
-	memcpy(result, readbackBufferData, sizeof(float) * 4 * 4);
+	float result[numFloatsReadback];
+	memcpy(result, readbackBufferData, sizeof(float) * numFloatsReadback);
 	D3D12_RANGE emptyRange{ 0, 0 };
 	buffer2Download->Unmap(0, &emptyRange);
 
 	{
 		std::wstringstream ss;
-		for (int i = 0; i < 4 * 4; ++i)
-			ss << result[i] << std::endl;
+		for (int i = 0; i < numFloatsReadback; ++i)
+			ss << i << ": " << result[i] << std::endl;
 		OutputDebugString(ss.str().c_str());
 	}
 }
