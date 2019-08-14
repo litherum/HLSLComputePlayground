@@ -1,8 +1,12 @@
-RWStructuredBuffer<float> buffer1 : register(u0);
-RWStructuredBuffer<float> buffer2 : register(u1);
+RWStructuredBuffer<float4x4> buffer1 : register(u0);
+RWStructuredBuffer<float4x4> buffer2 : register(u1);
 
 [numthreads(1, 1, 1)]
 void main()
 {
-	buffer2[0] = ldexp(2.5, 3.5);
+	float4x4 a = buffer1[0];
+	float4x4 b = buffer1[1];
+	float4x4 c = mul(a, b);
+	float4x4 d = a - 3;
+	buffer2[0] = c;
 }

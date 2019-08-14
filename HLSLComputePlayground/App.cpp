@@ -49,7 +49,7 @@ static winrt::Windows::Foundation::IAsyncAction run() {
 	check_hresult(dxgiFactory->EnumAdapters1(0, dxgiAdapter.put()));
 
 	com_ptr<ID3D12Device> device;
-	check_hresult(D3D12CreateDevice(dxgiAdapter.get(), D3D_FEATURE_LEVEL_12_1, __uuidof(device), device.put_void()));
+	check_hresult(D3D12CreateDevice(dxgiAdapter.get(), D3D_FEATURE_LEVEL_12_0, __uuidof(device), device.put_void()));
 
 	CD3DX12_ROOT_PARAMETER1 rootParameters[2];
 	rootParameters[0].InitAsUnorderedAccessView(0);
