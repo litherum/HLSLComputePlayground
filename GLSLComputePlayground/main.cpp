@@ -58,8 +58,7 @@ int main(int argc, char* argv[])
 	PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)wglGetProcAddress("glGetProgramInfoLog");
 	PFNGLUSEPROGRAMPROC glUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
 	PFNGLDISPATCHCOMPUTEPROC glDispatchCompute = (PFNGLDISPATCHCOMPUTEPROC)wglGetProcAddress("glDispatchCompute");
-	PFNGLMAPBUFFERPROC glMapBuffer = (PFNGLMAPBUFFERPROC)wglGetProcAddress("glMapBuffer");
-	PFNGLUNMAPBUFFERPROC glUnmapBuffer = (PFNGLUNMAPBUFFERPROC)wglGetProcAddress("glUnmapBuffer");
+	PFNGLGETBUFFERSUBDATAPROC glGetBufferSubData = (PFNGLGETBUFFERSUBDATAPROC)wglGetProcAddress("glGetBufferSubData");
 
 	FILE* fin = fopen("Shader.glsl", "r");
 	fseek(fin, 0, SEEK_END);
@@ -70,7 +69,7 @@ int main(int argc, char* argv[])
 	fclose(fin);
 
 	float inputData[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
-	int outputFloats = 16;
+	constexpr int outputFloats = 16;
 
 	GLint majorVersion;
 	glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
@@ -103,7 +102,7 @@ int main(int argc, char* argv[])
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, outputBuffer);
 	error = glGetError();
 	assert(error == GL_NO_ERROR);
-	glBufferStorage(GL_SHADER_STORAGE_BUFFER, outputFloats * sizeof(float), nullptr, GL_MAP_READ_BIT);
+	glBufferStorage(GL_SHADER_STORAGE_BUFFER, outputFloats * sizeof(float), nullptr, GL_DYNAMIC_STORAGE_BIT);
 	error = glGetError();
 	assert(error == GL_NO_ERROR);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, outputBuffer);
@@ -159,14 +158,12 @@ int main(int argc, char* argv[])
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, outputBuffer);
 	error = glGetError();
 	assert(error == GL_NO_ERROR);
-	float* outputBufferData = (float*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+	float outputData[outputFloats];
+	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, outputFloats * sizeof(float), outputData);
 	error = glGetError();
 	assert(error == GL_NO_ERROR);
 	for (size_t i = 0; i < outputFloats; ++i)
-		std::cout << i << ": " << outputBufferData[i] << std::endl;
-	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-	error = glGetError();
-	assert(error == GL_NO_ERROR);
+		std::cout << i << ": " << outputData[i] << std::endl;
 
 	glDeleteShader(shader);
 	error = glGetError();
