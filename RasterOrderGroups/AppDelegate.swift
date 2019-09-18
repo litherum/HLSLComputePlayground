@@ -44,7 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let commandQueue = device.makeCommandQueue()!
         let commandBuffer = commandQueue.makeCommandBuffer()!
 
-        let overlappingTriangleCount = 1
+        let overlappingTriangleCount = 100
 
         var vertexData = Array(repeating: SIMD2<Float>(), count: 6 * overlappingTriangleCount)
         for i in 0 ..< overlappingTriangleCount {
