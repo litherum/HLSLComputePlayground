@@ -106,26 +106,30 @@ namespace winrt::RasterizerOrderViews::implementation
 		descriptorHeapDescriptor.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 		check_hresult(device->CreateDescriptorHeap(&descriptorHeapDescriptor, __uuidof(descriptorHeap), descriptorHeap.put_void()));
 
+		auto overlappingTriangleCount = 100;
+
 		com_ptr<ID3D12Resource> vertexBuffer;
 		CD3DX12_HEAP_PROPERTIES defaultHeapProperties(D3D12_HEAP_TYPE_DEFAULT);
-		CD3DX12_RESOURCE_DESC vertexBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * 2 * 4 * 100);
+		CD3DX12_RESOURCE_DESC vertexBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(DirectX::XMFLOAT2) * 6 * overlappingTriangleCount);
 		check_hresult(device->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &vertexBufferDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, __uuidof(vertexBuffer), vertexBuffer.put_void()));
 		com_ptr<ID3D12Resource> vertexBufferUpload;
 		CD3DX12_HEAP_PROPERTIES uploadHeapProperties(D3D12_HEAP_TYPE_UPLOAD);
 		check_hresult(device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &vertexBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, __uuidof(vertexBufferUpload), vertexBufferUpload.put_void()));
 
-		std::vector<DirectX::XMFLOAT2> vertexData(4 * 100);
-		for (int i = 0; i < 100; ++i) {
-			vertexData[4 * i + 0] = DirectX::XMFLOAT2(-1, -1);
-			vertexData[4 * i + 1] = DirectX::XMFLOAT2(-1, 1);
-			vertexData[4 * i + 2] = DirectX::XMFLOAT2(1, -1);
-			vertexData[4 * i + 3] = DirectX::XMFLOAT2(1, 1);
+		std::vector<DirectX::XMFLOAT2> vertexData(6 * overlappingTriangleCount);
+		for (int i = 0; i < overlappingTriangleCount; ++i) {
+			vertexData[6 * i + 0] = DirectX::XMFLOAT2(-1, -1);
+			vertexData[6 * i + 1] = DirectX::XMFLOAT2(-1, 1);
+			vertexData[6 * i + 2] = DirectX::XMFLOAT2(1, -1);
+			vertexData[6 * i + 3] = DirectX::XMFLOAT2(1, -1);
+			vertexData[6 * i + 4] = DirectX::XMFLOAT2(-1, 1);
+			vertexData[6 * i + 5] = DirectX::XMFLOAT2(1, 1);
 		}
 
 		{
 			D3D12_SUBRESOURCE_DATA subresourceData = {};
 			subresourceData.pData = vertexData.data();
-			subresourceData.RowPitch = sizeof(float) * 2 * 4 * 100;
+			subresourceData.RowPitch = sizeof(DirectX::XMFLOAT2) * 6 * overlappingTriangleCount;
 			subresourceData.SlicePitch = subresourceData.RowPitch;
 			UpdateSubresources(commandList.get(), vertexBuffer.get(), vertexBufferUpload.get(), 0, 0, 1, &subresourceData);
 			auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(vertexBuffer.get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
@@ -134,8 +138,8 @@ namespace winrt::RasterizerOrderViews::implementation
 
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 		vertexBufferView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
-		vertexBufferView.StrideInBytes = sizeof(float) * 2;
-		vertexBufferView.SizeInBytes = sizeof(float) * 2 * 4 * 100;
+		vertexBufferView.StrideInBytes = sizeof(DirectX::XMFLOAT2);
+		vertexBufferView.SizeInBytes = sizeof(DirectX::XMFLOAT2) * 6 * overlappingTriangleCount;
 
 		D3D12_RESOURCE_DESC textureDesc = {};
 		textureDesc.MipLevels = 1;
@@ -192,9 +196,9 @@ namespace winrt::RasterizerOrderViews::implementation
 		commandList->RSSetViewports(1, &viewport);
 		D3D12_RECT scissorRect = { 0, 0, static_cast<LONG>(width), static_cast<LONG>(height) };
 		commandList->RSSetScissorRects(1, &scissorRect);
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
-		commandList->DrawInstanced(4 * 100, 1, 0, 0);
+		commandList->DrawInstanced(6 * overlappingTriangleCount, 1, 0, 0);
 
 		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(texture.get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_SOURCE);
 		commandList->ResourceBarrier(1, &barrier);
