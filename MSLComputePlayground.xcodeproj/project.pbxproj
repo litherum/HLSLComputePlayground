@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C4AFC1A2330D54900951232 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4AFC192330D54900951232 /* AppDelegate.swift */; };
+		1C4AFC1C2330D54900951232 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4AFC1B2330D54900951232 /* SceneDelegate.swift */; };
+		1C4AFC1E2330D54900951232 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4AFC1D2330D54900951232 /* ViewController.swift */; };
+		1C4AFC212330D54900951232 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C4AFC1F2330D54900951232 /* Main.storyboard */; };
+		1C4AFC232330D54C00951232 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C4AFC222330D54C00951232 /* Assets.xcassets */; };
+		1C4AFC262330D54C00951232 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C4AFC242330D54C00951232 /* LaunchScreen.storyboard */; };
+		1C4AFC2C2330D69200951232 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1C4AFC2B2330D69200951232 /* Shaders.metal */; };
 		1C4D6B17232F55A300D82ECB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4D6B16232F55A300D82ECB /* AppDelegate.swift */; };
 		1C4D6B19232F55A600D82ECB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C4D6B18232F55A600D82ECB /* Assets.xcassets */; };
 		1C4D6B1C232F55A600D82ECB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C4D6B1A232F55A600D82ECB /* MainMenu.xib */; };
@@ -18,6 +25,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1C4AFC172330D54900951232 /* RasterOrderGroupsiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RasterOrderGroupsiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C4AFC192330D54900951232 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		1C4AFC1B2330D54900951232 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		1C4AFC1D2330D54900951232 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		1C4AFC202330D54900951232 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		1C4AFC222330D54C00951232 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1C4AFC252330D54C00951232 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		1C4AFC272330D54C00951232 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1C4AFC2B2330D69200951232 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		1C4D6B14232F55A300D82ECB /* RasterOrderGroups.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RasterOrderGroups.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C4D6B16232F55A300D82ECB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1C4D6B18232F55A600D82ECB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -35,6 +51,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1C4AFC142330D54900951232 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1C4D6B11232F55A300D82ECB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -52,6 +75,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C4AFC182330D54900951232 /* RasterOrderGroupsiOS */ = {
+			isa = PBXGroup;
+			children = (
+				1C4AFC192330D54900951232 /* AppDelegate.swift */,
+				1C4AFC1B2330D54900951232 /* SceneDelegate.swift */,
+				1C4AFC1D2330D54900951232 /* ViewController.swift */,
+				1C4AFC1F2330D54900951232 /* Main.storyboard */,
+				1C4AFC222330D54C00951232 /* Assets.xcassets */,
+				1C4AFC242330D54C00951232 /* LaunchScreen.storyboard */,
+				1C4AFC272330D54C00951232 /* Info.plist */,
+				1C4AFC2B2330D69200951232 /* Shaders.metal */,
+			);
+			path = RasterOrderGroupsiOS;
+			sourceTree = "<group>";
+		};
 		1C4D6B15232F55A300D82ECB /* RasterOrderGroups */ = {
 			isa = PBXGroup;
 			children = (
@@ -70,6 +108,7 @@
 			children = (
 				1CAB06F923185A3B0092459F /* MSLComputePlayground */,
 				1C4D6B15232F55A300D82ECB /* RasterOrderGroups */,
+				1C4AFC182330D54900951232 /* RasterOrderGroupsiOS */,
 				1CAB06F823185A3B0092459F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -79,6 +118,7 @@
 			children = (
 				1CAB06F723185A3B0092459F /* MSLComputePlayground.app */,
 				1C4D6B14232F55A300D82ECB /* RasterOrderGroups.app */,
+				1C4AFC172330D54900951232 /* RasterOrderGroupsiOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -99,6 +139,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1C4AFC162330D54900951232 /* RasterOrderGroupsiOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C4AFC2A2330D54C00951232 /* Build configuration list for PBXNativeTarget "RasterOrderGroupsiOS" */;
+			buildPhases = (
+				1C4AFC132330D54900951232 /* Sources */,
+				1C4AFC142330D54900951232 /* Frameworks */,
+				1C4AFC152330D54900951232 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RasterOrderGroupsiOS;
+			productName = RasterOrderGroupsiOS;
+			productReference = 1C4AFC172330D54900951232 /* RasterOrderGroupsiOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 		1C4D6B13232F55A300D82ECB /* RasterOrderGroups */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1C4D6B21232F55A600D82ECB /* Build configuration list for PBXNativeTarget "RasterOrderGroups" */;
@@ -143,6 +200,9 @@
 				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = "Myles C. Maxfield";
 				TargetAttributes = {
+					1C4AFC162330D54900951232 = {
+						CreatedOnToolsVersion = 11.0;
+					};
 					1C4D6B13232F55A300D82ECB = {
 						CreatedOnToolsVersion = 11.0;
 					};
@@ -166,11 +226,22 @@
 			targets = (
 				1CAB06F623185A3B0092459F /* MSLComputePlayground */,
 				1C4D6B13232F55A300D82ECB /* RasterOrderGroups */,
+				1C4AFC162330D54900951232 /* RasterOrderGroupsiOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1C4AFC152330D54900951232 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C4AFC262330D54C00951232 /* LaunchScreen.storyboard in Resources */,
+				1C4AFC232330D54C00951232 /* Assets.xcassets in Resources */,
+				1C4AFC212330D54900951232 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1C4D6B12232F55A300D82ECB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -192,6 +263,17 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1C4AFC132330D54900951232 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C4AFC2C2330D69200951232 /* Shaders.metal in Sources */,
+				1C4AFC1E2330D54900951232 /* ViewController.swift in Sources */,
+				1C4AFC1A2330D54900951232 /* AppDelegate.swift in Sources */,
+				1C4AFC1C2330D54900951232 /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1C4D6B10232F55A300D82ECB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -213,6 +295,22 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		1C4AFC1F2330D54900951232 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1C4AFC202330D54900951232 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		1C4AFC242330D54C00951232 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1C4AFC252330D54C00951232 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
 		1C4D6B1A232F55A600D82ECB /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -232,6 +330,47 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		1C4AFC282330D54C00951232 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = RasterOrderGroupsiOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.myles.RasterOrderGroupsiOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos.internal;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1C4AFC292330D54C00951232 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = RasterOrderGroupsiOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.myles.RasterOrderGroupsiOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos.internal;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		1C4D6B1F232F55A600D82ECB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -420,6 +559,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1C4AFC2A2330D54C00951232 /* Build configuration list for PBXNativeTarget "RasterOrderGroupsiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C4AFC282330D54C00951232 /* Debug */,
+				1C4AFC292330D54C00951232 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		1C4D6B21232F55A600D82ECB /* Build configuration list for PBXNativeTarget "RasterOrderGroups" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
