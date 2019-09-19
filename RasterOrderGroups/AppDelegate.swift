@@ -36,7 +36,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         vertexDescriptor.attributes[0].format = .float2
         vertexDescriptor.attributes[0].offset = 0
         vertexDescriptor.attributes[0].bufferIndex = 0
-        vertexDescriptor.layouts[0].stride = MemoryLayout<Float>.size * 2
+        vertexDescriptor.layouts[0].stride = MemoryLayout<SIMD2<Float>>.size
         renderPipelineDescriptor.vertexDescriptor = vertexDescriptor
         renderPipelineDescriptor.inputPrimitiveTopology = .triangle
         let pipelinePipelineState = try! device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
