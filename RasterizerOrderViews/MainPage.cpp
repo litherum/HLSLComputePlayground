@@ -21,10 +21,16 @@ namespace winrt::RasterizerOrderViews::implementation
 		check_hresult(CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, __uuidof(dxgiFactory), dxgiFactory.put_void()));
 
 		com_ptr<IDXGIAdapter1> dxgiAdapter;
-		check_hresult(dxgiFactory->EnumAdapters1(0, dxgiAdapter.put()));
-
 		com_ptr<ID3D12Device> device;
-		check_hresult(D3D12CreateDevice(dxgiAdapter.get(), D3D_FEATURE_LEVEL_12_0, __uuidof(device), device.put_void()));
+		for (UINT i = 0; ; ++i) {
+			check_hresult(dxgiFactory->EnumAdapters1(i, dxgiAdapter.put()));
+			check_hresult(D3D12CreateDevice(dxgiAdapter.get(), D3D_FEATURE_LEVEL_12_0, __uuidof(device), device.put_void()));
+			D3D12_FEATURE_DATA_D3D12_OPTIONS options;
+			check_hresult(device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(options)));
+			if (options.ROVsSupported)
+				break;
+		}
+
 
 		CD3DX12_ROOT_PARAMETER1 rootParameters[2] = {};
 		CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
