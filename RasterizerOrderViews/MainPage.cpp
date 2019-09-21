@@ -23,6 +23,8 @@ namespace winrt::RasterizerOrderViews::implementation
 		com_ptr<IDXGIAdapter1> dxgiAdapter;
 		com_ptr<ID3D12Device> device;
 		for (UINT i = 0; ; ++i) {
+			dxgiAdapter = nullptr;
+			device = nullptr;
 			check_hresult(dxgiFactory->EnumAdapters1(i, dxgiAdapter.put()));
 			check_hresult(D3D12CreateDevice(dxgiAdapter.get(), D3D_FEATURE_LEVEL_12_0, __uuidof(device), device.put_void()));
 			D3D12_FEATURE_DATA_D3D12_OPTIONS options;
