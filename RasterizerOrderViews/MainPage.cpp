@@ -99,7 +99,7 @@ namespace winrt::RasterizerOrderViews::implementation
 
 		com_ptr<ID3D12CommandAllocator> commandAllocator;
 		check_hresult(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, __uuidof(commandAllocator), commandAllocator.put_void()));
-		com_ptr<ID3D12GraphicsCommandList> commandList;
+		com_ptr<ID3D12GraphicsCommandList4> commandList;
 		check_hresult(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.get(), nullptr, __uuidof(commandList), commandList.put_void()));
 
 		com_ptr<ID3D12Fence> fence;
@@ -192,6 +192,7 @@ namespace winrt::RasterizerOrderViews::implementation
 			commandList->ResourceBarrier(1, &barrier);
 		}
 
+		commandList->BeginRenderPass(0, nullptr, nullptr, D3D12_RENDER_PASS_FLAG_ALLOW_UAV_WRITES);
 		commandList->SetPipelineState(pipelineState.get());
 		commandList->SetGraphicsRootSignature(rootSignature.get());
 		ID3D12DescriptorHeap* heaps[] = { descriptorHeap.get() };
@@ -206,6 +207,7 @@ namespace winrt::RasterizerOrderViews::implementation
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 		commandList->DrawInstanced(6 * overlappingTriangleCount, 1, 0, 0);
+		commandList->EndRenderPass();
 
 		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(texture.get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_SOURCE);
 		commandList->ResourceBarrier(1, &barrier);
