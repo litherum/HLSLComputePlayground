@@ -33,7 +33,6 @@ namespace winrt::RasterizerOrderViews::implementation
 				break;
 		}
 
-
 		CD3DX12_ROOT_PARAMETER1 rootParameters[2] = {};
 		CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
 		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
@@ -241,7 +240,7 @@ namespace winrt::RasterizerOrderViews::implementation
     {
         InitializeComponent();
 
-		auto t = run();
+		run();
     }
 
     int32_t MainPage::MyProperty()
