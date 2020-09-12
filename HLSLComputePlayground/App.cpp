@@ -83,8 +83,8 @@ static winrt::Windows::Foundation::IAsyncAction run() {
 	auto defaultHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	auto uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto readbackHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_READBACK);
-	CD3DX12_RESOURCE_DESC matrixResourceDescription = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * numFloatsUpload);
-	CD3DX12_RESOURCE_DESC matrixResourceDescriptionUAV = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * numFloatsUpload, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+	CD3DX12_RESOURCE_DESC matrixResourceDescription = CD3DX12_RESOURCE_DESC::Buffer(sizeof(rawBuffer1Data));
+	CD3DX12_RESOURCE_DESC matrixResourceDescriptionUAV = CD3DX12_RESOURCE_DESC::Buffer(sizeof(rawBuffer1Data), D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
 	CD3DX12_RESOURCE_DESC floatResourceDescription = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * numFloatsReadback);
 	CD3DX12_RESOURCE_DESC floatResourceDescriptionUAV = CD3DX12_RESOURCE_DESC::Buffer(sizeof(float) * numFloatsReadback, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
 	com_ptr<ID3D12Resource> buffer1;
@@ -115,7 +115,7 @@ static winrt::Windows::Foundation::IAsyncAction run() {
 
 	D3D12_SUBRESOURCE_DATA buffer1Data = {};
 	buffer1Data.pData = &rawBuffer1Data;
-	buffer1Data.RowPitch = sizeof(float) * numFloatsUpload;
+	buffer1Data.RowPitch = sizeof(rawBuffer1Data);
 	buffer1Data.SlicePitch = buffer1Data.RowPitch;
 	UpdateSubresources(commandList.get(), buffer1.get(), buffer1Upload.get(), 0, 0, 1, &buffer1Data);
 	CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(buffer1.get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
